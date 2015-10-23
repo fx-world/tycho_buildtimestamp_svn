@@ -31,9 +31,10 @@ import org.tmatesoft.svn.core.wc.SVNInfo;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 
 /**
- * Build timestamp provider that returns date of the most recent commit that touches any file under
- * project basedir. File additional flexibility, some files can be ignored using gitignore patterns
- * specified in &lt;svn.ignore> element of tycho-packaging-plugin configuration block
+ * Build timestamp provider that returns date of the most recent commit that
+ * touches any file under project basedir. File additional flexibility, some
+ * files can be ignored using file list specified in &lt;svn.ignore>
+ * element of tycho-packaging-plugin configuration block
  * 
  * <p>
  * Typical usage
@@ -46,9 +47,9 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
  *         &lt;version>${tycho-version}&lt;/version>
  *         &lt;dependencies>
  *           &lt;dependency>
- *             &lt;groupId>org.eclipse.tycho.extras&lt;/groupId>
+ *             &lt;groupId>de.fxworld&lt;/groupId>
  *             &lt;artifactId>tycho-buildtimestamp-svn&lt;/artifactId>
- *             &lt;version>${tycho-version}&lt;/version>
+ *             &lt;version>0.19.0&lt;/version>
  *           &lt;/dependency>
  *         &lt;/dependencies>
  *         &lt;configuration>
@@ -62,43 +63,49 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
 @Component(role = BuildTimestampProvider.class, hint = "svn")
 public class SvnBuildTimestampProvider implements BuildTimestampProvider {
 
-  public Date getTimestamp(MavenSession session, MavenProject project, MojoExecution execution) throws MojoExecutionException {
-    SVNClientManager clientManager = SVNClientManager.newInstance();
-    SVNWCClient wcClient = clientManager.getWCClient();
-    final Date[] result = { null };
-    String ignoreFilter = getIgnoreFilter(execution);
-    final Set<String> filterFiles = new HashSet<String>();
-    
-    StringTokenizer tokens = new StringTokenizer(ignoreFilter, "\n\r\f");
-    while (tokens.hasMoreTokens()) {
-      filterFiles.add(tokens.nextToken());
-    }
-    try {
-      wcClient.doInfo(project.getBasedir(), null, null, SVNDepth.INFINITY, null, new ISVNInfoHandler() {
-        public void handleInfo(SVNInfo info) throws SVNException {
-          File file = info.getFile();
-          if (filterFiles.contains(file.getName())) {
-            return;
-          }
-          Date date = info.getCommittedDate();
-          if (result[0] == null || date.after(result[0])) {
-            result[0] = date;
-          }
-        }
-      });
-    } catch (SVNException e) {
-      throw new MojoExecutionException("Failed to get info", e);
-    }
-    
-    return result[0];
-  }
+	public Date getTimestamp(MavenSession session, MavenProject project, MojoExecution execution) throws MojoExecutionException {
+		SVNClientManager  clientManager = SVNClientManager.newInstance();
+		SVNWCClient       wcClient      = clientManager.getWCClient();		
+		String            ignoreFilter  = getIgnoreFilter(execution);
+		final Date[]      result        = { null };
+		final Set<String> filterFiles   = new HashSet<String>();
 
-  private String getIgnoreFilter(MojoExecution execution) {
-    Xpp3Dom pluginConfiguration = (Xpp3Dom)execution.getPlugin().getConfiguration();
-    Xpp3Dom ignoreDom = pluginConfiguration.getChild("svn.ignore");
-    if (ignoreDom == null) {
-      return null;
-    }
-    return ignoreDom.getValue();
-  }
+		if (ignoreFilter != null) {
+			StringTokenizer tokens = new StringTokenizer(ignoreFilter, "\n\r\f");
+			while (tokens.hasMoreTokens()) {
+				filterFiles.add(tokens.nextToken());
+			}
+		}
+		
+		try {
+			wcClient.doInfo(project.getBasedir(), null, null, SVNDepth.INFINITY, null, new ISVNInfoHandler() {
+				public void handleInfo(SVNInfo info) throws SVNException {
+					File file = info.getFile();
+					if (filterFiles.contains(file.getName())) {
+						return;
+					}
+					Date date = info.getCommittedDate();
+					if (result[0] == null || date.after(result[0])) {
+						result[0] = date;
+					}
+				}
+			});
+		} catch (SVNException e) {
+			throw new MojoExecutionException("Failed to get info", e);
+		}
+
+		return result[0];
+	}
+
+	private String getIgnoreFilter(MojoExecution execution) {
+		String result = null;
+		Xpp3Dom pluginConfiguration = (Xpp3Dom) execution.getPlugin().getConfiguration();
+		Xpp3Dom ignoreDom = pluginConfiguration.getChild("svn.ignore");
+
+		if (ignoreDom != null) {
+			result = ignoreDom.getValue();
+		}
+
+		return result;
+	}
 }
