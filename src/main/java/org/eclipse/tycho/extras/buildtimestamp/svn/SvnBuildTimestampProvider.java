@@ -7,6 +7,8 @@
  *
  * Contributors:
  *    Sonatype Inc. - initial API and implementation
+ *    Zune01 - porting usage of git to svn
+ *    fx-world Softwareentwicklung - standalone build and bugfixing
  *******************************************************************************/
 package org.eclipse.tycho.extras.buildtimestamp.svn;
 
@@ -33,7 +35,7 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
 /**
  * Build timestamp provider that returns date of the most recent commit that
  * touches any file under project basedir. File additional flexibility, some
- * files can be ignored using file list specified in &lt;svn.ignore>
+ * files can be ignored using file list specified in &lt;svn.ignore&gt;
  * element of tycho-packaging-plugin configuration block
  * 
  * <p>
@@ -41,22 +43,22 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
  * 
  * <pre>
  * ...
- *       &lt;plugin>
- *         &lt;groupId>org.eclipse.tycho&lt;/groupId>
- *         &lt;artifactId>tycho-packaging-plugin&lt;/artifactId>
- *         &lt;version>${tycho-version}&lt;/version>
- *         &lt;dependencies>
- *           &lt;dependency>
- *             &lt;groupId>de.fxworld&lt;/groupId>
- *             &lt;artifactId>tycho-buildtimestamp-svn&lt;/artifactId>
- *             &lt;version>0.19.0&lt;/version>
- *           &lt;/dependency>
- *         &lt;/dependencies>
- *         &lt;configuration>
- *           &lt;timestampProvider>svn&lt;/timestampProvider>
- *           &lt;svn.ignore>pom.xml&lt;/svn.ignore>
- *         &lt;/configuration>
- *       &lt;/plugin>
+ *       &lt;plugin&gt;
+ *         &lt;groupId&gt;org.eclipse.tycho&lt;/groupId&gt;
+ *         &lt;artifactId&gt;tycho-packaging-plugin&lt;/artifactId&gt;
+ *         &lt;version&gt;${tycho-version}&lt;/version&gt;
+ *         &lt;dependencies&gt;
+ *           &lt;dependency&gt;
+ *             &lt;groupId&gt;de.fxworld&lt;/groupId&gt;
+ *             &lt;artifactId&gt;tycho-buildtimestamp-svn&lt;/artifactId&gt;
+ *             &lt;version&gt;0.19.0&lt;/version&gt;
+ *           &lt;/dependency&gt;
+ *         &lt;/dependencies&gt;
+ *         &lt;configuration&gt;
+ *           &lt;timestampProvider&gt;svn&lt;/timestampProvider&gt;
+ *           &lt;svn.ignore&gt;pom.xml&lt;/svn.ignore&gt;
+ *         &lt;/configuration&gt;
+ *       &lt;/plugin&gt;
  * ...
  * </pre>
  */
