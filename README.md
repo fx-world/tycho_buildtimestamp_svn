@@ -13,7 +13,7 @@ element of tycho-packaging-plugin configuration block
 		<version>${tycho-version}</version>
 		<dependencies>
 			<dependency>
-				<groupId>de.fxworld</groupId>
+				<groupId>de.fx-world</groupId>
 				<artifactId>tycho-buildtimestamp-svn</artifactId>
 				<version>0.19.0</version>
 			</dependency>

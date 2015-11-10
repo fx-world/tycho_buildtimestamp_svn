@@ -49,7 +49,7 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
  *         &lt;version&gt;${tycho-version}&lt;/version&gt;
  *         &lt;dependencies&gt;
  *           &lt;dependency&gt;
- *             &lt;groupId&gt;de.fxworld&lt;/groupId&gt;
+ *             &lt;groupId&gt;de.fx-world&lt;/groupId&gt;
  *             &lt;artifactId&gt;tycho-buildtimestamp-svn&lt;/artifactId&gt;
  *             &lt;version&gt;0.19.0&lt;/version&gt;
  *           &lt;/dependency&gt;
