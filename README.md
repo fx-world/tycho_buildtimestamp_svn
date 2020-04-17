@@ -15,7 +15,7 @@ element of tycho-packaging-plugin configuration block
 			<dependency>
 				<groupId>de.fx-world</groupId>
 				<artifactId>tycho-buildtimestamp-svn</artifactId>
-				<version>0.19.0</version>
+				<version>1.7.0-SNAPSHOT</version>
 			</dependency>
 		</dependencies>
 		<configuration>
