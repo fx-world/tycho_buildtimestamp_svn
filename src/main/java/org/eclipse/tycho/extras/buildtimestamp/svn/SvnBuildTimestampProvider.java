@@ -99,6 +99,34 @@ public class SvnBuildTimestampProvider implements BuildTimestampProvider {
 		return result[0];
 	}
 
+	public String getTimestampString(MavenSession session, MavenProject project, MojoExecution execution) throws MojoExecutionException {
+		SVNClientManager  clientManager = SVNClientManager.newInstance();
+		SVNWCClient       wcClient      = clientManager.getWCClient();		
+		String            ignoreFilter  = getIgnoreFilter(execution);
+		final String[]    result        = { "" };
+		final Set<String> filterFiles   = new HashSet<String>();
+
+		if (ignoreFilter != null) {
+			StringTokenizer tokens = new StringTokenizer(ignoreFilter, "\n\r\f");
+			while (tokens.hasMoreTokens()) {
+				filterFiles.add(tokens.nextToken());
+			}
+		}
+		
+		try {
+			wcClient.doInfo(project.getBasedir(), null, null, SVNDepth.EMPTY, null, new ISVNInfoHandler() {
+				public void handleInfo(SVNInfo info) throws SVNException {
+					long committedRevision = info.getCommittedRevision().getNumber();
+					result[0] = Long.toString(committedRevision);
+				}
+			});
+		} catch (SVNException e) {
+			throw new MojoExecutionException("Failed to get info", e);
+		}
+
+		return result[0];
+	}
+
 	private String getIgnoreFilter(MojoExecution execution) {
 		String result = null;
 		Xpp3Dom pluginConfiguration = (Xpp3Dom) execution.getPlugin().getConfiguration();
