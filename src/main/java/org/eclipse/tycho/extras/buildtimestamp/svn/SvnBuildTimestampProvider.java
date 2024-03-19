@@ -51,7 +51,7 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
  *           &lt;dependency&gt;
  *             &lt;groupId&gt;de.fx-world&lt;/groupId&gt;
  *             &lt;artifactId&gt;tycho-buildtimestamp-svn&lt;/artifactId&gt;
- *             &lt;version&gt;0.19.0&lt;/version&gt;
+ *             &lt;version&gt;1.7.0-SNAPSHOT&lt;/version&gt;
  *           &lt;/dependency&gt;
  *         &lt;/dependencies&gt;
  *         &lt;configuration&gt;
@@ -90,6 +90,34 @@ public class SvnBuildTimestampProvider implements BuildTimestampProvider {
 					if (result[0] == null || date.after(result[0])) {
 						result[0] = date;
 					}
+				}
+			});
+		} catch (SVNException e) {
+			throw new MojoExecutionException("Failed to get info", e);
+		}
+
+		return result[0];
+	}
+
+	public String getTimestampString(MavenSession session, MavenProject project, MojoExecution execution) throws MojoExecutionException {
+		SVNClientManager  clientManager = SVNClientManager.newInstance();
+		SVNWCClient       wcClient      = clientManager.getWCClient();		
+		String            ignoreFilter  = getIgnoreFilter(execution);
+		final String[]    result        = { "" };
+		final Set<String> filterFiles   = new HashSet<String>();
+
+		if (ignoreFilter != null) {
+			StringTokenizer tokens = new StringTokenizer(ignoreFilter, "\n\r\f");
+			while (tokens.hasMoreTokens()) {
+				filterFiles.add(tokens.nextToken());
+			}
+		}
+		
+		try {
+			wcClient.doInfo(project.getBasedir(), null, null, SVNDepth.EMPTY, null, new ISVNInfoHandler() {
+				public void handleInfo(SVNInfo info) throws SVNException {
+					long committedRevision = info.getCommittedRevision().getNumber();
+					result[0] = Long.toString(committedRevision);
 				}
 			});
 		} catch (SVNException e) {
